@@ -1,0 +1,36 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\PicPilot.Core\PicPilot.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.4129.50" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net9.0-windows10.0.19041.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
+    <DisableImplicitNamespaceImports>true</DisableImplicitNamespaceImports>
+    <AssemblyName>PicPilot</AssemblyName>
+    <RootNamespace>PicPilot.App</RootNamespace>
+    <ApplicationIcon>Assets\picpilot.ico</ApplicationIcon>
+    <Version>2.0.2</Version>
+    <Authors>PicPilot</Authors>
+    <Product>PicPilot AI Commerce Studio</Product>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="Assets\picpilot.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Resource Include="Assets\login-commerce-studio.png" />
+  </ItemGroup>
+
+</Project>

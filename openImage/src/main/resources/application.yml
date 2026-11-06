@@ -1,0 +1,138 @@
+server:
+  port: ${SERVER_PORT:8080}
+spring:
+  application:
+    name: openimage
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/openimage}
+    username: ${DB_USERNAME:openimage}
+    password: ${DB_PASSWORD:}
+    driver-class-name: org.postgresql.Driver
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      timeout: 3s
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+  jackson:
+    property-naming-strategy: SNAKE_CASE
+    default-property-inclusion: non_null
+  servlet:
+    multipart:
+      max-file-size: ${SPRING_SERVLET_MULTIPART_MAX_FILE_SIZE:25MB}
+      max-request-size: ${SPRING_SERVLET_MULTIPART_MAX_REQUEST_SIZE:30MB}
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+  global-config:
+    db-config:
+      id-type: assign_uuid
+      logic-delete-field: deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+openimage:
+  security:
+    jwt-secret: ${JWT_SECRET}
+    access-token-minutes: ${ACCESS_TOKEN_MINUTES:120}
+    admin-invite-code: ${ADMIN_INVITE_CODE:}
+    allowed-origins: ${ALLOWED_ORIGINS:}
+  turnstile:
+    enabled: ${TURNSTILE_ENABLED:false}
+    secret-key: ${TURNSTILE_SECRET_KEY:}
+    verify-url: ${TURNSTILE_VERIFY_URL:https://challenges.cloudflare.com/turnstile/v0/siteverify}
+    timeout-seconds: ${TURNSTILE_TIMEOUT_SECONDS:5}
+    billing-enabled: ${TURNSTILE_BILLING_ENABLED:false}
+  storage:
+    provider: ${STORAGE_PROVIDER:local}
+    local-base-path: ${STORAGE_LOCAL_BASE_PATH:./data/storage}
+    minio-endpoint: ${MINIO_ENDPOINT:}
+    minio-public-base-url: ${MINIO_PUBLIC_BASE_URL:}
+    minio-bucket: ${MINIO_BUCKET:openimage}
+    minio-region: ${MINIO_REGION:us-east-1}
+    minio-access-key: ${MINIO_ACCESS_KEY:}
+    minio-secret-key: ${MINIO_SECRET_KEY:}
+    minio-path-style-access: ${MINIO_PATH_STYLE_ACCESS:true}
+    minio-public-read: ${MINIO_PUBLIC_READ:true}
+  features:
+    payment-enabled: ${PAYMENT_ENABLED:false}
+    github-login-enabled: ${GITHUB_LOGIN_ENABLED:false}
+    rabbitmq-enabled: ${RABBITMQ_ENABLED:false}
+  payments:
+    public-api-base-url: ${OPENIMAGE_PAYMENT_PUBLIC_API_BASE_URL:${OPENIMAGE_PUBLIC_API_BASE_URL:}}
+    user-web-base-url: ${OPENIMAGE_PAYMENT_USER_WEB_BASE_URL:${USER_WEB_BASE_URL:}}
+    afdian:
+      enabled: ${OPENIMAGE_AFDIAN_ENABLED:false}
+      user-id: ${OPENIMAGE_AFDIAN_USER_ID:}
+      api-token: ${OPENIMAGE_AFDIAN_API_TOKEN:}
+      base-url: ${OPENIMAGE_AFDIAN_BASE_URL:https://www.ifdian.net}
+      webhook-secret: ${OPENIMAGE_AFDIAN_WEBHOOK_SECRET:}
+      webhook-max-skew-seconds: ${OPENIMAGE_AFDIAN_WEBHOOK_MAX_SKEW_SECONDS:300}
+  oauth:
+    github-client-id: ${GITHUB_CLIENT_ID:}
+    github-client-secret: ${GITHUB_CLIENT_SECRET:}
+    user-web-base-url: ${USER_WEB_BASE_URL:http://localhost:3000}
+  email:
+    tencent-ses:
+      secret-id: ${TENCENT_SES_SECRET_ID:}
+      secret-key: ${TENCENT_SES_SECRET_KEY:}
+      from-email: ${TENCENT_SES_FROM_EMAIL:}
+      template-id: ${TENCENT_SES_TEMPLATE_ID:0}
+      notification-template-id: ${TENCENT_SES_NOTIFICATION_TEMPLATE_ID:0}
+      notification-template-subject-key: ${TENCENT_SES_NOTIFICATION_TEMPLATE_SUBJECT_KEY:subject}
+      notification-template-content-key: ${TENCENT_SES_NOTIFICATION_TEMPLATE_CONTENT_KEY:content}
+      region: ${TENCENT_SES_REGION:ap-hongkong}
+      timeout-seconds: ${TENCENT_SES_TIMEOUT_SECONDS:10}
+  ai:
+    text:
+      deepseek-enabled: ${OPENIMAGE_AI_TEXT_DEEPSEEK_ENABLED:false}
+      deepseek-base-url: ${OPENIMAGE_AI_TEXT_DEEPSEEK_BASE_URL:https://api.deepseek.com}
+      deepseek-key: ${OPENIMAGE_AI_TEXT_DEEPSEEK_KEY:}
+      deepseek-model: ${OPENIMAGE_AI_TEXT_DEEPSEEK_MODEL:deepseek-v4-flash}
+    image:
+      enabled: ${OPENIMAGE_AI_IMAGE_ENABLED:false}
+      provider: ${OPENIMAGE_AI_IMAGE_PROVIDER:hfsyapi}
+      base-url: ${OPENIMAGE_AI_IMAGE_BASE_URL:https://www.hfsyapi.cn}
+      api-key: ${OPENIMAGE_AI_IMAGE_KEY:}
+      model: ${OPENIMAGE_AI_IMAGE_MODEL:gpt-image-2}
+      size: ${OPENIMAGE_AI_IMAGE_SIZE:1024x1024}
+      response-format: ${OPENIMAGE_AI_IMAGE_RESPONSE_FORMAT:b64_json}
+      actual-cost: ${OPENIMAGE_AI_IMAGE_ACTUAL_COST:0.000000}
+      public-base-url: ${OPENIMAGE_AI_IMAGE_PUBLIC_BASE_URL:http://localhost:8080}
+      timeout-seconds: ${OPENIMAGE_AI_IMAGE_TIMEOUT_SECONDS:360}
+  ai-worker:
+    public-base-url: ${OPENIMAGE_AI_WORKER_PUBLIC_BASE_URL:${OPENIMAGE_AI_IMAGE_PUBLIC_BASE_URL:}}
+    token-pepper: ${OPENIMAGE_AI_WORKER_TOKEN_PEPPER:}
+    signing-secret: ${OPENIMAGE_AI_WORKER_SIGNING_SECRET:}
+    heartbeat-offline-seconds: ${OPENIMAGE_AI_WORKER_HEARTBEAT_OFFLINE_SECONDS:60}
+    input-url-ttl-seconds: ${OPENIMAGE_AI_WORKER_INPUT_URL_TTL_SECONDS:300}
+    max-artifact-bytes: ${OPENIMAGE_AI_WORKER_MAX_ARTIFACT_BYTES:26214400}
+    lease-grace-seconds: ${OPENIMAGE_AI_WORKER_LEASE_GRACE_SECONDS:15}
+  worker:
+    image-concurrency: ${OPENIMAGE_IMAGE_WORKER_CONCURRENCY:10}
+  video:
+    mock-enabled: ${VIDEO_MOCK_ENABLED:false}
+    paid-provider-enabled: ${VIDEO_PAID_PROVIDER_ENABLED:false}
+    agnes-enabled: ${VIDEO_AGNES_ENABLED:false}
+    apimart-api-key: ${APIMART_API_KEY:}
+    agnes-api-key: ${AGNES_API_KEY:}
+    hfsy-api-key: ${HFSY_API_KEY:}
+    config-encryption-key: ${VIDEO_CONFIG_ENCRYPTION_KEY:}
+    public-base-url: ${VIDEO_PUBLIC_BASE_URL:${OPENIMAGE_AI_IMAGE_PUBLIC_BASE_URL:http://localhost:8080}}
+    webhook-secret: ${APIMART_WEBHOOK_SECRET:}
+    timeout-minutes: ${VIDEO_TASK_TIMEOUT_MINUTES:30}
+    worker-batch-size: ${VIDEO_WORKER_BATCH_SIZE:20}
+    poll-interval-ms: ${VIDEO_WORKER_POLL_INTERVAL_MS:3000}
+  assistant:
+    enabled: ${OPENIMAGE_ASSISTANT_ENABLED:false}
+    base-url: ${OPENIMAGE_ASSISTANT_BASE_URL:https://api.openai.com}
+    api-key: ${OPENIMAGE_ASSISTANT_API_KEY:}
+    api-keys: ${OPENIMAGE_ASSISTANT_API_KEYS:}
+    model: ${OPENIMAGE_ASSISTANT_MODEL:gpt-5.5}
+    max-input-chars: ${OPENIMAGE_ASSISTANT_MAX_INPUT_CHARS:3000}
+    max-history-messages: ${OPENIMAGE_ASSISTANT_MAX_HISTORY_MESSAGES:12}
+    max-tokens: ${OPENIMAGE_ASSISTANT_MAX_TOKENS:1400}
+    temperature: ${OPENIMAGE_ASSISTANT_TEMPERATURE:0.35}
+    timeout-seconds: ${OPENIMAGE_ASSISTANT_TIMEOUT_SECONDS:45}

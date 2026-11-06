@@ -1,0 +1,83 @@
+name: suacanvas-ci
+
+on:
+  push:
+    branches-ignore: [main]
+  pull_request:
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    env:
+      NEXT_PUBLIC_API_BASE_URL: http://localhost:18080
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            openImage-ts/package-lock.json
+            openImage-admin-ts/package-lock.json
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: maven
+
+      - name: User web install
+        working-directory: openImage-ts
+        run: npm ci
+      - name: User web lint
+        working-directory: openImage-ts
+        run: CI=true npm run lint
+      - name: User web build
+        working-directory: openImage-ts
+        run: npm run build
+
+      - name: Admin web install
+        working-directory: openImage-admin-ts
+        run: npm ci
+      - name: Admin web lint
+        working-directory: openImage-admin-ts
+        run: CI=true npm run lint
+      - name: Admin web build
+        working-directory: openImage-admin-ts
+        run: npm run build
+
+      - name: E2E smoke install
+        run: npm ci
+      - name: E2E smoke browsers
+        run: npx playwright install --with-deps chromium
+      - name: E2E smoke gate
+        env:
+          BASE_URL: ${{ vars.SMOKE_USER_BASE_URL || 'http://localhost:13000' }}
+          ADMIN_BASE_URL: ${{ vars.SMOKE_ADMIN_BASE_URL || 'http://localhost:13001' }}
+        run: npm run test:e2e:smoke
+
+      - name: Backend tests
+        working-directory: openImage
+        run: mvn -B test
+
+      - name: Docker build backend
+        run: docker build -t openimage-backend-ci ./openImage
+      - name: Docker build user web
+        run: docker build --build-arg NEXT_PUBLIC_API_BASE_URL=http://localhost:18080 -t openimage-user-ci ./openImage-ts
+      - name: Docker build admin web
+        run: docker build --build-arg NEXT_PUBLIC_API_BASE_URL=http://localhost:18080 -t openimage-admin-ci ./openImage-admin-ts
+
+      - name: Compose smoke up
+        run: |
+          python3 scripts/init-local-env.py
+          docker compose --env-file .env --project-name openimage_ci up -d --build
+      - name: Backend smoke gate
+        run: bash scripts/smoke-test.sh http://localhost:18080
+      - name: Compose diagnostics
+        if: failure()
+        run: |
+          docker compose --env-file .env --project-name openimage_ci ps || true
+          docker compose --env-file .env --project-name openimage_ci logs --no-color backend || true
+      - name: Compose smoke down
+        if: always()
+        run: docker compose --env-file .env --project-name openimage_ci down -v --remove-orphans || true

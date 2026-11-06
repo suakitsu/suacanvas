@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 图片生成平台 · 产品说明书 V3.0</title>
+<style>
+:root {
+  --blue:#2563EB; --blue-d:#1D4ED8; --blue-l:#EFF6FF; --blue-ll:#DBEAFE;
+  --purple:#7C3AED; --purple-l:#F5F3FF; --purple-ll:#EDE9FE;
+  --green:#059669; --green-l:#F0FDF4; --green-ll:#DCFCE7;
+  --amber:#D97706; --amber-l:#FFFBEB; --amber-ll:#FEF3C7;
+  --pink:#DB2777; --pink-l:#FDF2F8; --pink-ll:#FCE7F3;
+  --red:#DC2626; --red-l:#FEF2F2;
+  --slate:#1E293B; --slate-m:#475569; --slate-l:#64748B; --slate-xl:#94A3B8;
+  --bg:#F1F5F9; --surface:#FFFFFF; --border:#E2E8F0; --border-l:#F1F5F9;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,'PingFang SC','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--slate);font-size:15px;line-height:1.75}
+
+/* ── Page ── */
+.wrap{max-width:860px;margin:0 auto;padding:28px 16px 100px}
+
+/* ── Cover ── */
+.cover{
+  background:linear-gradient(140deg,#1e3a8a 0%,#3730a3 40%,#6d28d9 100%);
+  border-radius:20px;padding:64px 32px 56px;text-align:center;
+  margin-bottom:28px;position:relative;overflow:hidden;
+}
+.cover::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(circle at 70% 30%,rgba(255,255,255,.08) 0%,transparent 60%);
+}
+.cover-icon{font-size:72px;display:block;margin-bottom:20px;position:relative}
+.cover h1{font-size:38px;font-weight:900;color:#fff;letter-spacing:-1px;margin-bottom:10px;position:relative}
+.cover h1 span{color:#93C5FD}
+.cover-sub{font-size:16px;color:rgba(255,255,255,.7);margin-bottom:28px;position:relative}
+.cover-pills{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;position:relative}
+.cover-pill{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);
+  color:rgba(255,255,255,.9);font-size:12px;font-weight:600;
+  padding:5px 14px;border-radius:20px;backdrop-filter:blur(4px)}
+
+/* ── TOC ── */
+.toc{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:24px 28px;margin-bottom:28px}
+.toc-label{font-size:11px;font-weight:700;color:var(--slate-l);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:14px}
+.toc-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px 20px}
+.toc-grid a{color:var(--blue);text-decoration:none;font-size:13.5px;padding:3px 0;display:flex;align-items:center;gap:6px;border-radius:4px;transition:color .15s}
+.toc-grid a:hover{color:var(--blue-d)}
+.toc-n{font-size:11px;color:var(--slate-xl);min-width:18px}
+
+/* ── Section card ── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:32px;margin-bottom:20px}
+
+/* ── Headings ── */
+.h1{display:flex;align-items:center;gap:10px;font-size:20px;font-weight:800;
+  color:var(--blue-d);background:var(--blue-l);border-left:4px solid var(--blue);
+  padding:13px 16px;border-radius:9px;margin-bottom:22px}
+.h2{font-size:15px;font-weight:700;color:var(--purple);
+  background:var(--purple-l);border-left:3px solid var(--purple);
+  padding:8px 13px;border-radius:7px;margin:22px 0 12px}
+.h2.g{color:var(--green);background:var(--green-l);border-color:var(--green)}
+.h2.a{color:var(--amber);background:var(--amber-l);border-color:var(--amber)}
+.h2.r{color:var(--red);background:var(--red-l);border-color:var(--red)}
+.h3{font-size:14px;font-weight:700;color:var(--slate);margin:16px 0 8px}
+p{margin-bottom:10px;color:var(--slate-m);font-size:14px}
+
+/* ── Lists ── */
+ul.ul{list-style:none;padding:0;margin-bottom:10px}
+ul.ul li{padding:4px 0 4px 20px;position:relative;font-size:14px;color:var(--slate-m);line-height:1.6}
+ul.ul li::before{content:'•';position:absolute;left:5px;color:var(--blue);font-weight:900}
+ul.ul li.s{padding-left:36px;font-size:13px;color:var(--slate-l)}
+ul.ul li.s::before{content:'◦';left:20px;color:var(--slate-xl)}
+ol.ol{list-style:none;counter-reset:n;padding:0;margin-bottom:10px}
+ol.ol li{counter-increment:n;padding:6px 0 6px 34px;position:relative;font-size:14px;color:var(--slate-m)}
+ol.ol li::before{content:counter(n);position:absolute;left:0;top:7px;
+  background:var(--blue);color:#fff;width:22px;height:22px;
+  border-radius:50%;font-size:11px;font-weight:700;
+  display:flex;align-items:center;justify-content:center}
+
+/* ── Tables ── */
+.tw{overflow-x:auto;margin:12px 0 16px;border-radius:9px;border:1px solid var(--border)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{background:var(--blue-l);color:var(--blue-d);font-weight:700;
+  padding:10px 14px;text-align:left;border-bottom:2px solid var(--blue-ll);white-space:nowrap}
+td{padding:9px 14px;border-bottom:1px solid var(--border-l);vertical-align:top;line-height:1.5;color:var(--slate-m)}
+tr:last-child td{border-bottom:none}
+tr:nth-child(even) td{background:#FAFBFC}
+
+/* ── Callouts ── */
+.tip{background:var(--green-l);border-left:3px solid var(--green);padding:10px 14px;border-radius:7px;font-size:13px;color:#065F46;margin:12px 0}
+.warn{background:var(--amber-l);border-left:3px solid var(--amber);padding:10px 14px;border-radius:7px;font-size:13px;color:#92400E;margin:12px 0}
+.info{background:var(--blue-l);border-left:3px solid var(--blue);padding:10px 14px;border-radius:7px;font-size:13px;color:#1E40AF;margin:12px 0}
+
+/* ── API三路卡片 ── */
+.api-row{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:16px 0}
+.api-c{border-radius:11px;padding:18px;border:1px solid var(--border)}
+.api-c.c1{background:linear-gradient(135deg,var(--blue-l),var(--blue-ll));border-color:#BFDBFE}
+.api-c.c2{background:linear-gradient(135deg,var(--purple-l),var(--purple-ll));border-color:#DDD6FE}
+.api-c.c3{background:linear-gradient(135deg,var(--green-l),var(--green-ll));border-color:#BBF7D0}
+.api-badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;margin-bottom:8px}
+.api-c.c1 .api-badge{background:var(--blue);color:#fff}
+.api-c.c2 .api-badge{background:var(--purple);color:#fff}
+.api-c.c3 .api-badge{background:var(--green);color:#fff}
+.api-c h4{font-size:15px;font-weight:800;margin-bottom:6px;color:var(--slate)}
+.api-c p{font-size:12px;color:var(--slate-l);margin:0;line-height:1.5}
+
+/* ── 路由策略 ── */
+.route{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid var(--border-l);font-size:13px}
+.route:last-child{border-bottom:none}
+.route-scene{flex:5;font-weight:600;color:var(--slate);padding-top:1px}
+.route-arrow{color:var(--slate-xl);flex-shrink:0;margin-top:3px}
+.route-api{flex:5}
+.badge{display:inline-block;padding:2px 9px;border-radius:5px;font-size:11px;font-weight:700;margin:1px 2px 1px 0}
+.bb{background:var(--blue-ll);color:var(--blue-d)}
+.bp{background:var(--purple-ll);color:var(--purple)}
+.bg{background:var(--green-ll);color:var(--green)}
+.br{background:#FEE2E2;color:var(--red)}
+
+/* ── 分区 Zone ── */
+.zone{border-radius:12px;overflow:hidden;margin-bottom:28px;border:1px solid var(--border)}
+.zone-head{display:flex;align-items:center;gap:14px;padding:18px 22px}
+.zone-head.z1{background:linear-gradient(135deg,#EFF6FF,#DBEAFE)}
+.zone-head.z2{background:linear-gradient(135deg,#F0FDF4,#DCFCE7)}
+.zone-head.z3{background:linear-gradient(135deg,#F5F3FF,#EDE9FE)}
+.zone-head.z4{background:linear-gradient(135deg,#FDF2F8,#FCE7F3)}
+.zone-head.z5{background:linear-gradient(135deg,#FFFBEB,#FEF9C3)}
+.zone-emoji{font-size:36px;flex-shrink:0}
+.zone-info{flex:1}
+.zone-info h3{font-size:17px;font-weight:800;margin-bottom:2px}
+.zone-head.z1 h3{color:#1D4ED8}
+.zone-head.z2 h3{color:#166534}
+.zone-head.z3 h3{color:#6D28D9}
+.zone-head.z4 h3{color:#9D174D}
+.zone-head.z5 h3{color:#92400E}
+.zone-info p{font-size:12px;color:var(--slate-l);margin:0}
+.zone-pill{font-size:11px;font-weight:700;padding:4px 12px;border-radius:12px;white-space:nowrap;flex-shrink:0}
+.zone-head.z1 .zone-pill{background:#1D4ED8;color:#fff}
+.zone-head.z2 .zone-pill{background:#16A34A;color:#fff}
+.zone-head.z3 .zone-pill{background:var(--purple);color:#fff}
+.zone-head.z4 .zone-pill{background:var(--pink);color:#fff}
+.zone-head.z5 .zone-pill{background:var(--amber);color:#fff}
+.zone-body{padding:20px 22px}
+
+/* ── 套餐卡片 ── */
+.plan-row{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:14px 0}
+.plan-c{border:1px solid var(--border);border-radius:10px;padding:14px 12px;text-align:center}
+.plan-c.hot{border-color:var(--blue);background:var(--blue-l)}
+.plan-name{font-size:12px;font-weight:700;color:var(--slate-l);margin-bottom:6px}
+.plan-c.hot .plan-name{color:var(--blue-d)}
+.plan-price{font-size:20px;font-weight:900;color:var(--slate);line-height:1}
+.plan-c.hot .plan-price{color:var(--blue-d)}
+.plan-pts{font-size:11px;color:var(--slate-l);margin-top:4px}
+.plan-unit{font-size:11px;color:var(--green);font-weight:700;margin-top:3px}
+
+/* ── 路线图 ── */
+.phases{padding-left:4px}
+.phase{border-left:2px solid var(--blue-ll);padding:0 0 24px 24px;position:relative}
+.phase:last-child{border-left:2px solid transparent;padding-bottom:0}
+.phase::before{content:'';position:absolute;left:-6px;top:4px;
+  width:10px;height:10px;border-radius:50%;background:var(--blue);border:2px solid #fff;box-shadow:0 0 0 2px var(--blue)}
+.phase-tag{display:inline-flex;align-items:center;gap:6px;
+  background:var(--blue-l);border:1px solid var(--blue-ll);
+  color:var(--blue-d);font-size:13px;font-weight:700;
+  padding:4px 12px;border-radius:6px;margin-bottom:10px}
+
+/* ── 行动清单 ── */
+.action{display:flex;gap:12px;padding:11px 0;border-bottom:1px solid var(--border-l);align-items:flex-start}
+.action:last-child{border-bottom:none}
+.action-d{background:var(--blue);color:#fff;font-size:10px;font-weight:700;
+  padding:3px 10px;border-radius:5px;white-space:nowrap;min-width:68px;text-align:center;margin-top:2px;flex-shrink:0}
+.action-t{font-size:14px;color:var(--slate-m);line-height:1.6}
+
+/* ── Stats row ── */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:16px 0}
+.stat{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center}
+.stat-num{font-size:22px;font-weight:900;color:var(--blue-d);line-height:1}
+.stat-label{font-size:11px;color:var(--slate-l);margin-top:4px}
+
+/* ── Risk table ── */
+.risk-row{display:grid;grid-template-columns:3fr 1fr 5fr;gap:0;border-bottom:1px solid var(--border-l)}
+.risk-row:last-child{border-bottom:none}
+.risk-row>div{padding:10px 12px;font-size:13px;color:var(--slate-m)}
+.risk-row>div:first-child{font-weight:600;color:var(--slate)}
+.risk-head>div{padding:9px 12px;font-size:12px;font-weight:700;color:var(--blue-d);background:var(--blue-l);border-bottom:2px solid var(--blue-ll)}
+.risk-lv{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:700}
+.lv-h{background:#FEE2E2;color:var(--red)}
+.lv-m{background:#FEF3C7;color:var(--amber)}
+.lv-l{background:var(--green-ll);color:var(--green)}
+
+/* ── Footer ── */
+.footer{text-align:center;padding:40px 16px;color:var(--slate-l);font-size:13px}
+.footer-main{font-size:22px;font-weight:900;color:var(--blue-d);display:block;margin-bottom:8px}
+
+/* ── Print ── */
+@media print{
+  body{background:#fff;font-size:12px}
+  .wrap{padding:0;max-width:100%}
+  .card,.zone{break-inside:avoid;box-shadow:none}
+  .cover{background:#1e3a8a!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+@media(max-width:640px){
+  .api-row{grid-template-columns:1fr}
+  .plan-row{grid-template-columns:repeat(3,1fr)}
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .toc-grid{grid-template-columns:1fr}
+  .card{padding:20px 16px}
+  .zone-body{padding:16px}
+  .cover h1{font-size:28px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- ══ COVER ══ -->
+<div class="cover">
+  <span class="cover-icon">🎨</span>
+  <h1>AI 图片生成平台<br><span>产品说明书</span></h1>
+  <div class="cover-sub">副业启动版 · 低成本 · 快上线 · 可扩展</div>
+  <div class="cover-pills">
+    <span class="cover-pill">📄 V3.0 最终版</span>
+    <span class="cover-pill">🔌 APIMart · APIyi · 自建中转</span>
+    <span class="cover-pill">📦 4+1 核心分区</span>
+    <span class="cover-pill">📅 2026年6月</span>
+  </div>
+</div>
+
+<!-- ══ TOC ══ -->
+<div class="toc">
+  <div class="toc-label">目录</div>
+  <div class="toc-grid">
+    <a href="#s1"><span class="toc-n">一</span>项目概述与目标</a>
+    <a href="#s2"><span class="toc-n">二</span>目标用户分析</a>
+    <a href="#s3"><span class="toc-n">三</span>API 接入方案（三路）</a>
+    <a href="#s4"><span class="toc-n">四</span>核心分区规划（4+1）</a>
+    <a href="#s5"><span class="toc-n">五</span>技术架构</a>
+    <a href="#s6"><span class="toc-n">六</span>功能模块设计</a>
+    <a href="#s7"><span class="toc-n">七</span>积分与变现策略</a>
+    <a href="#s8"><span class="toc-n">八</span>开发路线图</a>
+    <a href="#s9"><span class="toc-n">九</span>成本与风险</a>
+    <a href="#s10"><span class="toc-n">十</span>7 天启动行动清单</a>
+  </div>
+</div>
+
+<!-- ══ 一、概述 ══ -->
+<div class="card" id="s1">
+  <div class="h1">一、项目概述与目标</div>
+  <p>定位为<strong>面向商业场景的垂直 AI 图片生成 SaaS 平台</strong>，核心价值是「即开即用、不需要懂 AI 也能出商业图」。后端接入 APIMart + APIyi + 自建中转三路 API 分发，前端聚焦 4 个高付费意愿分区 + 1 个裂变引流区，快速启动验证，再逐步扩展。</p>
+  <div class="stats">
+    <div class="stat"><div class="stat-num">4+1</div><div class="stat-label">核心分区</div></div>
+    <div class="stat"><div class="stat-num">3路</div><div class="stat-label">API 冗余接入</div></div>
+    <div class="stat"><div class="stat-num">4周</div><div class="stat-label">MVP 目标上线</div></div>
+    <div class="stat"><div class="stat-num">50-80%</div><div class="stat-label">预估毛利率</div></div>
+  </div>
+  <div class="h2">阶段性商业目标</div>
+  <div class="tw"><table>
+    <tr><th>阶段</th><th>时间</th><th>里程碑</th><th>MRR 目标</th></tr>
+    <tr><td>MVP</td><td>0–4 周</td><td>3 个分区上线，支付跑通，内测 10 人</td><td>—</td></tr>
+    <tr><td>冷启动</td><td>1–3 月</td><td>100 付费用户，口碑正向</td><td>¥3,000+</td></tr>
+    <tr><td>增长期</td><td>3–6 月</td><td>稳定用户，拓展企业客户</td><td>¥15,000+</td></tr>
+    <tr><td>规模化</td><td>6–12 月</td><td>品牌化，B 端合作，私有化选项</td><td>¥50,000+</td></tr>
+  </table></div>
+</div>
+
+<!-- ══ 二、用户 ══ -->
+<div class="card" id="s2">
+  <div class="h1">二、目标用户分析</div>
+  <div class="tw"><table>
+    <tr><th>用户类型</th><th>核心痛点</th><th>使用频率</th><th>付费意愿</th></tr>
+    <tr><td><strong>跨境电商卖家</strong></td><td>主图/白底图找美工贵，一张几十美金</td><td>5–50 张/天</td><td>🔥🔥🔥 极强</td></tr>
+    <tr><td><strong>国内电商运营</strong></td><td>上架图不够，美工人力成本高</td><td>10–30 张/天</td><td>🔥🔥🔥 极强</td></tr>
+    <tr><td><strong>营销/广告团队</strong></td><td>大量广告创意需快速迭代</td><td>50–200 张/天</td><td>🔥🔥🔥 极强</td></tr>
+    <tr><td><strong>独立站运营</strong></td><td>Banner 更换频繁，配图效率低</td><td>20–50 张/周</td><td>🔥🔥 较强</td></tr>
+    <tr><td><strong>服装品牌/卖家</strong></td><td>模特拍摄贵，换季上新慢</td><td>10–30 张/天</td><td>🔥🔥 较强</td></tr>
+    <tr><td><strong>社媒创作者</strong></td><td>小红书/视频配图需要差异化素材</td><td>2–10 张/天</td><td>🔥 中等</td></tr>
+  </table></div>
+  <div class="tip">💡 首要攻克：跨境卖家。他们有美金预算、痛点标准化、愿意为提效付费——是最快能产生现金流的群体。</div>
+</div>
+
+<!-- ══ 三、API接入 ══ -->
+<div class="card" id="s3">
+  <div class="h1">三、API 接入方案（三路）</div>
+
+  <div class="api-row">
+    <div class="api-c c1">
+      <span class="api-badge">主力通道</span>
+      <h4>APIMart</h4>
+      <p>OpenAI 官方授权合作，DALL-E 3 稳定性最高，可开增值税发票，企业客户首选，价格略高但信任度强。</p>
+    </div>
+    <div class="api-c c2">
+      <span class="api-badge">补充通道</span>
+      <h4>APIyi（API易）</h4>
+      <p>价格比 APIMart 低一档，模型覆盖广（Flux / SDXL / MJ 系列均有）。主力故障时切换，或承接开源模型任务。</p>
+    </div>
+    <div class="api-c c3">
+      <span class="api-badge">自建中转</span>
+      <h4>自己的中转站</h4>
+      <p>成本最低，自控 Key 池和限流策略。专门跑高频低价任务（批量草图、预览出图），最大化利润空间。</p>
+    </div>
+  </div>
+
+  <div class="h2">路由分配策略</div>
+  <div class="route">
+    <span class="route-scene">🌐 电商白底图、A+ 图（品质优先）</span>
+    <span class="route-arrow">→</span>
+    <span class="route-api"><span class="badge bb">APIMart</span> DALL-E 3</span>
+  </div>
+  <div class="route">
+    <span class="route-scene">📢 营销 Banner、插画（性价比）</span>
+    <span class="route-arrow">→</span>
+    <span class="route-api"><span class="badge bp">APIyi</span> Flux Pro / SDXL</span>
+  </div>
+  <div class="route">
+    <span class="route-scene">👗 服装场景图、虚拟模特</span>
+    <span class="route-arrow">→</span>
+    <span class="route-api"><span class="badge bp">APIyi</span> SDXL 微调 / Fashn.ai</span>
+  </div>
+  <div class="route">
+    <span class="route-scene">✨ AI 写真、数字形象</span>
+    <span class="route-arrow">→</span>
+    <span class="route-api"><span class="badge bp">APIyi</span> Flux / SDXL</span>
+  </div>
+  <div class="route">
+    <span class="route-scene">⚡ 批量预览、草图、高频低价任务</span>
+    <span class="route-arrow">→</span>
+    <span class="route-api"><span class="badge bg">自建中转</span> SDXL Turbo</span>
+  </div>
+  <div class="route">
+    <span class="route-scene">🔄 主力故障自动 Fallback</span>
+    <span class="route-arrow">→</span>
+    <span class="route-api"><span class="badge bb">APIMart</span> → <span class="badge bp">APIyi</span> → <span class="badge bg">自建</span></span>
+  </div>
+
+  <div class="h2">模型选型对照</div>
+  <div class="tw"><table>
+    <tr><th>使用场景</th><th>推荐模型</th><th>走哪路</th><th>成本/张</th></tr>
+    <tr><td>电商白底图</td><td>DALL-E 3</td><td>APIMart</td><td>¥0.08–0.12</td></tr>
+    <tr><td>场景/Lifestyle 图</td><td>Flux Pro</td><td>APIyi</td><td>¥0.06–0.10</td></tr>
+    <tr><td>含中文的营销 Banner</td><td>DALL-E 3 / CogView-4</td><td>APIMart / APIyi</td><td>¥0.05–0.10</td></tr>
+    <tr><td>服装场景 / 时尚图</td><td>SDXL 微调</td><td>APIyi</td><td>¥0.03–0.06</td></tr>
+    <tr><td>AI 写真 / 数字形象</td><td>Flux / SDXL</td><td>APIyi / 自建</td><td>¥0.03–0.08</td></tr>
+    <tr><td>快速草图 / 预览</td><td>SDXL Turbo</td><td>自建中转</td><td>¥0.01–0.03</td></tr>
+  </table></div>
+  <div class="warn">⚠️ 自建中转稳定性：如接别人上游 Key，至少备 3–5 个做轮询，设监控报警——单点挂了整个低价通道就断了。</div>
+</div>
+
+<!-- ══ 四、分区 ══ -->
+<div class="card" id="s4">
+  <div class="h1">四、核心分区规划（4 + 1）</div>
+  <div class="info">💡 核心逻辑：场景标签 → 专属提示词模板 → 表单化参数输入 → 适配平台尺寸 → 推荐模型自动路由</div>
+</div>
+
+<!-- Zone 1 -->
+<div class="zone" id="z1">
+  <div class="zone-head z1">
+    <span class="zone-emoji">🌐</span>
+    <div class="zone-info">
+      <h3>跨境电商区</h3>
+      <p>亚马逊 · 速卖通 · TikTok Shop · Shopify 独立站</p>
+    </div>
+    <span class="zone-pill">优先级 #1</span>
+  </div>
+  <div class="zone-body">
+    <p>跨境卖家付费意愿是所有群体里最强的。一张好的 Amazon Lifestyle 图在外面找美工要几十美金，在你这里几毛钱搞定。他们对提效工具的预算非常大方，且痛点极度标准化。</p>
+    <ul class="ul">
+      <li><strong>亚马逊主图（白底图）</strong></li>
+      <li class="s">纯白背景 #FFFFFF，商品占比 85%+，无文字水印，尺寸 1000×1000 / 1500×1500 / 2000×2000</li>
+      <li><strong>Amazon A+ 内容图 / Lifestyle 场景图</strong></li>
+      <li class="s">商品置于真实生活场景，970×600 / 600×900；风格预设：北美家居、欧式简约、户外运动</li>
+      <li><strong>Shopify / 独立站 Banner</strong></li>
+      <li class="s">1920×1080 / 1200×628，含文字留白区域，支持多语言版（英/西/德/法）</li>
+      <li><strong>TikTok Shop 商品图</strong></li>
+      <li class="s">竖版 9:16（1080×1920），适配短视频封面和货架展示</li>
+      <li><strong>Facebook / Google Shopping 广告图</strong></li>
+      <li class="s">1200×628 / 800×800，品质优先，走 APIMart → DALL-E 3</li>
+    </ul>
+    <div class="tw"><table>
+      <tr><th>模板</th><th>推荐模型</th><th>消耗点数</th><th>API 成本</th></tr>
+      <tr><td>亚马逊白底图</td><td>DALL-E 3（APIMart）</td><td>3 点</td><td>~¥0.08</td></tr>
+      <tr><td>A+ / Lifestyle 图</td><td>Flux Pro（APIyi）</td><td>5 点</td><td>~¥0.10</td></tr>
+      <tr><td>独立站 Banner</td><td>DALL-E 3 / Flux</td><td>4 点</td><td>~¥0.08</td></tr>
+      <tr><td>TikTok Shop 图</td><td>SDXL（APIyi）</td><td>3 点</td><td>~¥0.05</td></tr>
+    </table></div>
+  </div>
+</div>
+
+<!-- Zone 2 -->
+<div class="zone" id="z2">
+  <div class="zone-head z2">
+    <span class="zone-emoji">🛒</span>
+    <div class="zone-info">
+      <h3>国内电商区</h3>
+      <p>淘宝 · 天猫 · 京东 · 拼多多 · 抖音电商 · 小红书商品</p>
+    </div>
+    <span class="zone-pill">优先级 #2</span>
+  </div>
+  <div class="zone-body">
+    <p>国内电商运营人员基数庞大，对「双十一营销图」「小红书爆款风格主图」的需求是海量的，人群基数大，容易跑出订单量。</p>
+    <ul class="ul">
+      <li><strong>淘宝/天猫主图</strong>（800×800）：纯色/渐变/场景三种背景模式，多种国货/日系/高端风格</li>
+      <li><strong>京东商品白底图</strong>（1000×1000）</li>
+      <li><strong>拼多多主图</strong>（800×800）+ 九宫格拆图工具</li>
+      <li><strong>详情页配图</strong>（750px 宽）：功能说明图、卖点对比图、使用步骤图</li>
+      <li><strong>直播间背景图</strong>（1920×1080）：绿幕背景、虚拟直播场景</li>
+      <li><strong>节日大促营销图</strong>：双十一/618/国庆/春节，预设节日风格 + 促销排版</li>
+      <li><strong>店铺首页 Banner / 钻展图</strong>（520×280 / 1920×540）</li>
+    </ul>
+    <div class="tip">💡 含中文文字的 Banner 优先走 APIMart（DALL-E 3 中文理解最强）；场景图走 APIyi（Flux / SDXL 更快更便宜）</div>
+  </div>
+</div>
+
+<!-- Zone 3 -->
+<div class="zone" id="z3">
+  <div class="zone-head z3">
+    <span class="zone-emoji">📢</span>
+    <div class="zone-info">
+      <h3>营销素材区</h3>
+      <p>小红书 · 公众号 · 微博 · 朋友圈广告 · 印刷海报</p>
+    </div>
+    <span class="zone-pill">优先级 #3</span>
+  </div>
+  <div class="zone-body">
+    <p>重点做社交媒体配图——不管是个人自媒体还是公司营销团队，每天都要批量产图。这个分区用户活跃度非常高，口碑裂变效果最好。</p>
+    <ul class="ul">
+      <li><strong>小红书封面图</strong>（1080×1440，3:4 竖版）：爆款种草风、知识卡片风、生活清新风</li>
+      <li><strong>微信公众号配图</strong>：首图 900×500 / 文内图 800×600</li>
+      <li><strong>微博配图</strong>（1080×1080、多图组合）</li>
+      <li><strong>广告 Banner</strong>：微信朋友圈 900×500 / 抖音信息流 1080×1920 / Google 标准三件套（728×90 / 300×250 / 160×600）</li>
+      <li><strong>活动海报</strong>（A4/A3，300 DPI 印刷精度）：产品发布、品牌宣传、线下活动、招聘海报</li>
+      <li><strong>PPT 演示配图</strong>（16:9，商务科技风）</li>
+    </ul>
+  </div>
+</div>
+
+<!-- Zone 4 -->
+<div class="zone" id="z4">
+  <div class="zone-head z4">
+    <span class="zone-emoji">👗</span>
+    <div class="zone-info">
+      <h3>服装 &amp; 时尚区</h3>
+      <p>淘宝服装店 · 独立设计师 · 跨境服装品牌</p>
+    </div>
+    <span class="zone-pill">加分项 #4</span>
+  </div>
+  <div class="zone-body">
+    <p>如果虚拟模特换装跑通（平铺图合成到 AI 模特），付费客单价可以定得极高——真实模特拍摄一套要几百上千元，这里几块钱。技术稍复杂，放在 MVP 边缘，跑通了重点推。</p>
+    <ul class="ul">
+      <li><strong>服装平铺图</strong>（白背景标准电商首图）</li>
+      <li><strong>虚拟模特上身效果图</strong></li>
+      <li class="s">上传服装平铺图 → AI 合成到虚拟模特身上（生成式人体，非真实肖像）</li>
+      <li class="s">技术路线：Fashn.ai API（约 $0.02/次）或 Kling AI 试衣接口</li>
+      <li><strong>时尚场景图</strong>：街拍风 / 棚拍风 / 户外大片风</li>
+      <li><strong>面料/材质纹理图</strong>：设计稿与详情页布料细节展示</li>
+      <li><strong>配饰展示图</strong>：手袋、鞋子、首饰</li>
+    </ul>
+    <div class="warn">⚠️ 虚拟换装推荐直接接 Fashn.ai API，比自建模型省事 10 倍，先验证付费意愿再决定是否深入</div>
+  </div>
+</div>
+
+<!-- Zone 5 随缘 -->
+<div class="zone" id="z5">
+  <div class="zone-head z5">
+    <span class="zone-emoji">✨</span>
+    <div class="zone-info">
+      <h3>AI 写真 &amp; 数字形象区</h3>
+      <p>个人头像 · 职业写真 · 小红书人设图 · 古风写真 · IP 形象</p>
+    </div>
+    <span class="zone-pill">随缘发挥 ★</span>
+  </div>
+  <div class="zone-body">
+    <p>这个区最大的价值<strong>不是直接变现，而是自带裂变属性</strong>——用户生成完 AI 写真会主动发小红书/朋友圈，每一条都是免费广告。技术上和普通生图没有本质区别，门槛低，引流价值高。</p>
+    <ul class="ul">
+      <li><strong>AI 职业头像</strong>：上传 1–3 张自拍 → 商务风/创意风/学术风职业照（LinkedIn / 简历 / 官网用）</li>
+      <li><strong>小红书人设图</strong>：网红感、氛围感、旅行风，博主专属风格</li>
+      <li><strong>古风 / 汉服写真</strong>（分享欲最强，裂变效果最好）</li>
+      <li><strong>情侣写真 / 宝宝写真</strong>：高情感价值，节日礼物场景，付费意愿强</li>
+      <li><strong>个人 IP 形象 / 吉祥物草稿</strong>：自媒体人、品牌主的专属 IP 卡通参考稿</li>
+    </ul>
+    <div class="tip">💡 运营技巧：在小红书发「AI 写真 vs 真实拍摄」对比帖配平台链接，这个区最容易跑出 10 万+ 引流帖</div>
+  </div>
+</div>
+
+<!-- ══ 五、技术架构 ══ -->
+<div class="card" id="s5">
+  <div class="h1">五、技术架构</div>
+
+  <div class="h2">推荐技术栈</div>
+  <div class="tw"><table>
+    <tr><th>层级</th><th>选型</th><th>说明</th></tr>
+    <tr><td>前端框架</td><td>Next.js 14（React）</td><td>SEO 友好，ISR 支持，生态成熟</td></tr>
+    <tr><td>UI 组件库</td><td>Shadcn/ui + Tailwind CSS</td><td>免费开源，高度可定制，设计感强</td></tr>
+    <tr><td>后端框架</td><td>Node.js + Fastify / Python + FastAPI</td><td>异步高并发，适合大量 AI API 调用</td></tr>
+    <tr><td>主数据库</td><td>MySQL 8.0（关系型主库）</td><td>阿里云 RDS 托管，省运维</td></tr>
+    <tr><td>缓存 / 队列</td><td>Redis 7</td><td>Session、限流计数、Bull 任务队列</td></tr>
+    <tr><td>对象存储</td><td>阿里云 OSS / 腾讯云 COS</td><td>生成图片存储 + CDN 加速</td></tr>
+    <tr><td>任务队列</td><td>Bull（Node.js）</td><td>批量任务异步处理、API 失败重试</td></tr>
+    <tr><td>WebSocket</td><td>Socket.io</td><td>实时推送生成进度</td></tr>
+    <tr><td>部署</td><td>阿里云 ECS 2核4G + Nginx</td><td>初期月成本约 ¥300–500，按需升配</td></tr>
+  </table></div>
+
+  <div class="h2">图片生成核心流程</div>
+  <ol class="ol">
+    <li>用户选择分区场景 → 填写参数（产品名 / 颜色 / 风格 / 尺寸）</li>
+    <li>前端调用 <code>/api/generate</code>，携带场景模板 ID + 用户参数</li>
+    <li>后端将参数注入提示词模板，生成最终 Prompt（自动中英双语拼接）</li>
+    <li>API 路由器判断优先级：品质任务 → APIMart；性价比 → APIyi；批量低价 → 自建中转</li>
+    <li>API 返回图片 URL / Base64 → 后端下载 → 压缩 → 上传 OSS → 返回 CDN 链接</li>
+    <li>扣除用户积分，写入生成记录（用户ID / 参数 / 模型 / 成本 / 图片URL）</li>
+    <li>WebSocket 推送完成通知，前端渲染结果图</li>
+  </ol>
+  <div class="info">💡 API 路由器写一个简单的优先级队列 + 失败重试逻辑即可，100 行内搞定。主力挂了自动 fallback 到下一路，不需要手动干预。</div>
+
+  <div class="h2">数据库核心表设计</div>
+  <div class="tw"><table>
+    <tr><th>表名</th><th>关键字段</th><th>说明</th></tr>
+    <tr><td>users</td><td>id, phone, email, credits, plan, created_at</td><td>用户基础信息 + 积分余额</td></tr>
+    <tr><td>orders</td><td>id, user_id, amount, credits, pay_channel, status</td><td>充值/支付订单</td></tr>
+    <tr><td>generation_tasks</td><td>id, user_id, scene_id, prompt, model, api_provider, status, cost_credits, img_url</td><td>每次生成记录</td></tr>
+    <tr><td>scene_templates</td><td>id, zone, name, base_prompt_en, base_prompt_zh, default_model, credits_per_gen</td><td>场景模板配置表</td></tr>
+    <tr><td>api_key_pool</td><td>id, provider, key_value, is_active, fail_count, last_used_at</td><td>三路 API Key 池</td></tr>
+    <tr><td>cost_log</td><td>id, task_id, provider, model, actual_cost_rmb</td><td>实际 API 成本明细</td></tr>
+  </table></div>
+</div>
+
+<!-- ══ 六、功能模块 ══ -->
+<div class="card" id="s6">
+  <div class="h1">六、功能模块设计</div>
+
+  <div class="h2">用户权限体系</div>
+  <div class="tw"><table>
+    <tr><th>角色</th><th>权限</th><th>目的</th></tr>
+    <tr><td>游客</td><td>体验 3 次生成，需注册后下载</td><td>降低首次使用门槛</td></tr>
+    <tr><td>免费用户</td><td>每日 5 次，低分辨率，带水印</td><td>留存用户，促进付费转化</td></tr>
+    <tr><td>付费用户</td><td>按积分消费，高分辨率，无水印</td><td>主要收入来源</td></tr>
+    <tr><td>企业用户</td><td>批量 API、专属通道、开发票</td><td>高客单价，稳定合同收入</td></tr>
+  </table></div>
+
+  <div class="h2">工作台核心功能</div>
+  <ul class="ul">
+    <li><strong>场景选择器：</strong>左侧分区导航（图标 + 文字），点击进入对应模板</li>
+    <li><strong>参数面板：</strong>表单化替代手写 Prompt，核心参数 ≤ 5 个，其余折叠为「高级设置」</li>
+    <li><strong>风格预设：</strong>每个模板 4–8 种风格一键切换，有缩略图预览</li>
+    <li><strong>尺寸选择器：</strong>各平台标准尺寸快选 + 自定义宽高</li>
+    <li><strong>数量选择：</strong>1 / 2 / 4 张同时生成（多张享积分折扣）</li>
+    <li><strong>参考图上传：</strong>图生图，上传参考图作为风格 / 构图参考</li>
+    <li><strong>实时进度：</strong>WebSocket 推送（排队中 → 生成中 → 完成）</li>
+  </ul>
+
+  <div class="h2">图片结果页功能</div>
+  <ul class="ul">
+    <li>一键下载（原图 / 压缩图 / 转 PNG/WebP）</li>
+    <li>复用参数（一键再生，微调单个参数）</li>
+    <li>图片变体（基于结果生成 4 个变体）</li>
+    <li>放大 2x / 4x（AI 超分，Real-ESRGAN）</li>
+    <li>去背景（白底图一键抠图，调用 remove.bg 或 BRIA API）</li>
+    <li>收藏 / 相册管理，历史记录保存 90 天（企业版永久）</li>
+  </ul>
+
+  <div class="h2">核心页面清单</div>
+  <div class="tw"><table>
+    <tr><th>页面</th><th>核心功能</th><th>优先级</th></tr>
+    <tr><td>首页（Landing Page）</td><td>产品介绍、分区案例展示、CTA 引导注册</td><td><span class="badge br">P0</span></td></tr>
+    <tr><td>工作台（主生成页）</td><td>分区选择 + 参数填写 + 实时生成预览</td><td><span class="badge br">P0</span></td></tr>
+    <tr><td>图库 / 历史记录</td><td>生成记录管理、批量下载</td><td><span class="badge br">P0</span></td></tr>
+    <tr><td>积分充值页</td><td>套餐展示、微信/支付宝支付</td><td><span class="badge br">P0</span></td></tr>
+    <tr><td>注册/登录</td><td>手机号 OTP 验证码</td><td><span class="badge br">P0</span></td></tr>
+    <tr><td>个人中心</td><td>账户信息、余额、消费记录</td><td><span class="badge bb">P1</span></td></tr>
+    <tr><td>管理后台（内部）</td><td>API Key 管理、成本统计、用户管理</td><td><span class="badge br">P0</span></td></tr>
+  </table></div>
+</div>
+
+<!-- ══ 七、变现 ══ -->
+<div class="card" id="s7">
+  <div class="h1">七、积分体系与变现策略</div>
+
+  <div class="h2">积分套餐定价</div>
+  <div class="plan-row">
+    <div class="plan-c">
+      <div class="plan-name">体验包</div>
+      <div class="plan-price">¥9.9</div>
+      <div class="plan-pts">50 点 · 30天</div>
+      <div class="plan-unit">¥0.198/点</div>
+    </div>
+    <div class="plan-c">
+      <div class="plan-name">基础包</div>
+      <div class="plan-price">¥49</div>
+      <div class="plan-pts">300 点 · 90天</div>
+      <div class="plan-unit">¥0.163/点</div>
+    </div>
+    <div class="plan-c hot">
+      <div class="plan-name">标准包 🔥</div>
+      <div class="plan-price">¥149</div>
+      <div class="plan-pts">1000 点 · 180天</div>
+      <div class="plan-unit">¥0.149/点</div>
+    </div>
+    <div class="plan-c">
+      <div class="plan-name">专业包</div>
+      <div class="plan-price">¥399</div>
+      <div class="plan-pts">3000 点 · 365天</div>
+      <div class="plan-unit">¥0.133/点</div>
+    </div>
+    <div class="plan-c">
+      <div class="plan-name">企业月订</div>
+      <div class="plan-price">¥999</div>
+      <div class="plan-pts">10000 点/月</div>
+      <div class="plan-unit">¥0.100/点</div>
+    </div>
+  </div>
+  <div class="tip">💡 毛利测算：生成一张 API 真实成本 ¥0.02–0.10，售价 3–5 点（约 ¥0.05–0.15），<strong>毛利率 50–80%</strong></div>
+
+  <div class="h2">收入来源矩阵</div>
+  <div class="tw"><table>
+    <tr><th>收入类型</th><th>说明</th><th>预期占比</th><th>启动优先级</th></tr>
+    <tr><td>积分充值（B2C）</td><td>散客按量付费，最主要收入</td><td>55%</td><td>★★★★★</td></tr>
+    <tr><td>会员订阅（B2C）</td><td>按月/年订阅，稳定现金流</td><td>20%</td><td>★★★★</td></tr>
+    <tr><td>企业定制（B2B）</td><td>专属 API 额度 + 开增值税专票</td><td>15%</td><td>★★★</td></tr>
+    <tr><td>增值工具</td><td>去背景、超分、批量打包按次收费</td><td>10%</td><td>★★★</td></tr>
+  </table></div>
+
+  <div class="h2">低成本获客渠道</div>
+  <ul class="ul">
+    <li><strong>小红书种草（最优先）：</strong>AI 写真区天然裂变，「AI 写真 vs 真实拍摄」对比帖，用户自传播</li>
+    <li><strong>跨境电商社群渗透：</strong>亚马逊、速卖通卖家群，分享白底图生成实操案例</li>
+    <li><strong>短视频演示：</strong>「5 秒出一张亚马逊白底图」抖音/视频号，视觉冲击力极强</li>
+    <li><strong>SEO 内容布局：</strong>「AI 生成电商图」「Amazon 主图 AI 制作」等长尾词落地页</li>
+    <li><strong>老带新裂变：</strong>推荐注册双方各得 50 点，低成本扩用户</li>
+  </ul>
+</div>
+
+<!-- ══ 八、路线图 ══ -->
+<div class="card" id="s8">
+  <div class="h1">八、开发路线图</div>
+  <div class="phases">
+    <div class="phase">
+      <div class="phase-tag">⚡ Phase 0 &nbsp;·&nbsp; 技术验证（第 1 周）</div>
+      <ul class="ul">
+        <li>分别注册 APIMart + APIyi，各充值 ¥100–200 测试</li>
+        <li>跑通 DALL-E 3 / Flux / SDXL 基础文生图调用，对比出图质量</li>
+        <li>写 API 路由器原型：三路 Key 池 + 优先级 + 失败重试（100 行 Node.js 搞定）</li>
+        <li>搭 Next.js 骨架项目，确认技术选型无卡点</li>
+      </ul>
+    </div>
+    <div class="phase">
+      <div class="phase-tag">🚀 Phase 1 &nbsp;·&nbsp; MVP（第 2–4 周）</div>
+      <ul class="ul">
+        <li>完成跨境电商区 + 国内电商区，每区 3–5 个场景模板（参数化表单）</li>
+        <li>用户注册/登录（手机号 OTP）+ 图库（历史记录 + 下载）</li>
+        <li>微信支付 + 支付宝接入，积分充值完整闭环</li>
+        <li>管理后台：API Key 管理、成本统计、用户列表</li>
+        <li>找 5–10 个真实电商卖家内测，验证付费意愿</li>
+      </ul>
+    </div>
+    <div class="phase">
+      <div class="phase-tag">📈 Phase 2 &nbsp;·&nbsp; 功能增强（第 1–3 月）</div>
+      <ul class="ul">
+        <li>补充营销素材区 + AI 写真区（小红书推广引擎）</li>
+        <li>图片后处理：去背景、超分辨率 2x/4x</li>
+        <li>批量任务功能（一次提交 5–20 张）</li>
+        <li>会员订阅体系上线</li>
+        <li>小红书 / 抖音推广落地页</li>
+      </ul>
+    </div>
+    <div class="phase">
+      <div class="phase-tag">💼 Phase 3 &nbsp;·&nbsp; 商业化扩展（第 3–6 月）</div>
+      <ul class="ul">
+        <li>服装虚拟换装区（评估 Fashn.ai 可行性，跑通后重点推）</li>
+        <li>企业 API 接口 + 开发者文档站</li>
+        <li>图生图、局部重绘（Inpaint）</li>
+        <li>数据分析看板（用户行为、模板热度、成本趋势）</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 九、成本风险 ══ -->
+<div class="card" id="s9">
+  <div class="h1">九、成本估算与风险应对</div>
+
+  <div class="h2">初期固定成本（月均）</div>
+  <div class="tw"><table>
+    <tr><th>项目</th><th>费用（元/月）</th><th>备注</th></tr>
+    <tr><td>云服务器（ECS 2核4G）</td><td>200–400</td><td>阿里云/腾讯云，建议先按量后包年</td></tr>
+    <tr><td>对象存储 OSS（100GB）</td><td>30–80</td><td>含 CDN 流量费</td></tr>
+    <tr><td>数据库（RDS MySQL）</td><td>100–200</td><td>初期可先自建在 ECS 上节省费用</td></tr>
+    <tr><td>短信服务（验证码）</td><td>50–150</td><td>按条计费，预估约 1000 条/月</td></tr>
+    <tr><td>内容审核 API</td><td>50–200</td><td>腾讯云天御 / 阿里云绿网，按次计费</td></tr>
+    <tr><td><strong>合计</strong></td><td><strong>约 ¥500–1,000/月</strong></td><td>视流量规模动态调整</td></tr>
+  </table></div>
+  <div class="tip">💡 盈亏测算：平均定价 ¥0.15/张，月出图 10,000 张 → 毛收入 ¥1,500，API 成本 ¥600，毛利 ¥900。加上套餐溢价（体验包 ¥9.9 = 50 点，均摊 ¥0.20/张），实际毛利率更高。月出图超过 3 万张即可覆盖服务器成本实现盈利。</div>
+
+  <div class="h2 a">主要风险与应对</div>
+  <div style="border:1px solid var(--border);border-radius:9px;overflow:hidden;margin-top:8px">
+    <div class="risk-row risk-head">
+      <div>风险点</div><div>可能性</div><div>应对策略</div>
+    </div>
+    <div class="risk-row">
+      <div>APIMart / APIyi 涨价或限流</div>
+      <div><span class="risk-lv lv-m">中</span></div>
+      <div>三路互备，随时切换；维持 2 周用量的预付费余额</div>
+    </div>
+    <div class="risk-row">
+      <div>自建中转上游 Key 被封</div>
+      <div><span class="risk-lv lv-h">高</span></div>
+      <div>至少备 3–5 个 Key 轮询；设监控报警；自动 fallback 到 APIyi</div>
+    </div>
+    <div class="risk-row">
+      <div>竞品快速跟进</div>
+      <div><span class="risk-lv lv-h">高</span></div>
+      <div>专注垂直场景深度，建立模板库壁垒，快速迭代响应用户反馈</div>
+    </div>
+    <div class="risk-row">
+      <div>用户增长缓慢</div>
+      <div><span class="risk-lv lv-m">中</span></div>
+      <div>MVP 验证后再加大推广预算；先找 5–10 个种子用户，口碑带量</div>
+    </div>
+    <div class="risk-row">
+      <div>内容合规风险</div>
+      <div><span class="risk-lv lv-m">中</span></div>
+      <div>输入关键词黑名单 + 输出图片审核；用户协议明确双方权责</div>
+    </div>
+    <div class="risk-row">
+      <div>AIGC 监管政策收紧</div>
+      <div><span class="risk-lv lv-l">低</span></div>
+      <div>持续关注政策，提前准备算法备案材料；可先面向境外用户</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 十、行动清单 ══ -->
+<div class="card" id="s10">
+  <div class="h1">十、7 天启动行动清单</div>
+  <div class="info">💡 从最小可行产品开始，先验证付费意愿，再扩功能。速度比完美更重要。有 1 个人主动付钱，就值得全力冲。</div>
+  <br>
+  <div class="action">
+    <span class="action-d">Day 1</span>
+    <span class="action-t">注册 APIMart + APIyi，各充值 ¥100–200。分别调用 DALL-E 3 / Flux / SDXL 各跑 10 张图，对比质量和速度，确定主力模型。</span>
+  </div>
+  <div class="action">
+    <span class="action-d">Day 1–2</span>
+    <span class="action-t">写 API 路由器：三路 Key 池 + 优先级逻辑 + 失败自动重试。100 行 Node.js，核心中枢，先做这个。</span>
+  </div>
+  <div class="action">
+    <span class="action-d">Day 2</span>
+    <span class="action-t">购买阿里云 ECS（2核4G）+ OSS，用 create-next-app 搭 Next.js 骨架，确定域名并购买。</span>
+  </div>
+  <div class="action">
+    <span class="action-d">Day 3–4</span>
+    <span class="action-t">完成「亚马逊白底图」一个场景的完整功能：填参数 → 调 API → 显示结果 → 下载。付费意愿最高的场景，先把这一个跑通。</span>
+  </div>
+  <div class="action">
+    <span class="action-d">Day 5</span>
+    <span class="action-t">接入微信支付，打通充值闭环：用户充 ¥9.9 → 得 50 点 → 生成图片 → 下载。这是最重要的一步。</span>
+  </div>
+  <div class="action">
+    <span class="action-d">Day 6–7</span>
+    <span class="action-t">找 5 个跨境卖家 / 电商运营朋友内测，让他们真实使用并收集反馈。如果有 1 人主动掏钱——恭喜，方向验证成功，全力冲！</span>
+  </div>
+</div>
+
+<div class="footer">
+  <span class="footer-main">🚀 祝副业顺利，早日脱贫！</span>
+  AI 图片生成平台 · 产品说明书 V3.0 最终版 · 2026年6月
+</div>
+
+</div>
+</body>
+</html>

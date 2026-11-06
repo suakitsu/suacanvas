@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">PicPilot</string>
+    <string name="download_started">已开始下载</string>
+    <string name="cannot_open_link">暂时无法打开该链接</string>
+</resources>

@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "published_at": "2026-08-12T06:59:25Z",
+  "android": {
+    "enabled": true,
+    "version": "1.0.0",
+    "url": "/downloads/PicPilot-Android-1.0.0.apk",
+    "size_bytes": 1202318,
+    "sha256": "ae957fa9fc9fac3e9aea38ba4c618b66b8b2ba44adf79879729941ad802ec98b",
+    "minimum_os": "Android 8.0+"
+  },
+  "windows": {
+    "enabled": true,
+    "version": "1.0.0",
+    "url": "/downloads/PicPilot-Windows-1.0.0-setup.exe",
+    "size_bytes": 2058810,
+    "sha256": "ba278d6eecdf04f907142765db7bb4121956c1626dba6df7475e80b9faf5115d",
+    "minimum_os": "Windows 10/11 64-bit"
+  }
+}

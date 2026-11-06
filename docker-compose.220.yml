@@ -1,0 +1,37 @@
+services:
+  postgres:
+    container_name: picpilot220_postgres
+  redis:
+    container_name: picpilot220_redis
+  minio:
+    container_name: picpilot220_minio
+    ports:
+      - "19020:9000"
+      - "19021:9001"
+  backend:
+    container_name: picpilot220_backend
+    environment:
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-http://127.0.0.1:13000,http://127.0.0.1:13001,http://127.0.0.1:18080},http://127.0.0.1:13110,http://127.0.0.1:13111
+    ports:
+      - "18080:8080"
+  user-web:
+    container_name: picpilot220_user_web
+    build:
+      args:
+        NEXT_PUBLIC_CANVAS_LAB_ENABLED: "true"
+        NEXT_PUBLIC_CANVAS_NOVA_URL: http://127.0.0.1:13110/
+        NEXT_PUBLIC_CANVAS_INFINITE_URL: http://127.0.0.1:13111/
+    environment:
+      NEXT_PUBLIC_CANVAS_LAB_ENABLED: "true"
+      NEXT_PUBLIC_CANVAS_NOVA_URL: http://127.0.0.1:13110/
+      NEXT_PUBLIC_CANVAS_INFINITE_URL: http://127.0.0.1:13111/
+    ports:
+      - "13000:3000"
+  admin-web:
+    container_name: picpilot220_admin_web
+    ports:
+      - "13001:3001"
+
+networks:
+  openimage_net:
+    name: picpilot220_net

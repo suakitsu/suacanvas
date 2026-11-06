@@ -1,0 +1,128 @@
+# Dependencies
+node_modules/
+third_party/canvas-lab/
+canvas-dist/
+canvas-source/
+.pnp
+.pnp.js
+
+# Build outputs
+.next/
+out/
+dist/
+build/
+target/
+*.class
+*.tsbuildinfo
+
+# Logs
+*.log
+npm-debug.log*
+
+# Environment
+.env
+.env.local
+.env.production.local
+.env.*
+!.env.example
+!.env.*.example
+!.env.*.template
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# WorkBuddy internal
+.workbuddy/
+.learnings/
+
+# Local test artifacts
+.playwright-cli/
+artifacts/
+output/
+.tmp/
+.tmp*
+tmp/
+tmp_template_smoke/
+_deploy_commerce_suite/
+_remote_test_before/
+.hotfix-prod/
+.tmp_remote_build_dir
+*.zip
+*.tar
+*.pid
+openimage-p0p1-*.patch*
+
+# Deployment packages
+*.tgz
+*.tar.gz
+__pycache__/
+*.pyc
+
+# Local backups, user uploads and database snapshots (not SQL migrations)
+/backups/
+/backup/
+/production-backup*/
+/data/
+/uploads/
+*.dump
+*.sql.gz
+*.sqlite
+*.sqlite3
+*.db
+*.db-wal
+*.db-shm
+
+# Download installers are built and packaged locally, not versioned
+/openImage-ts/public/downloads/*.apk
+/openImage-ts/public/downloads/*.aab
+/openImage-ts/public/downloads/*.exe
+/openImage-ts/public/downloads/*.msi
+/openImage-ts/public/downloads/*.msix
+
+# Scripts
+generate_openimage_project.py
+
+# Local handoff / secrets for Codex continuation
+OPENIMAGE_LOCAL_HANDOFF_SECRET.md
+OPENIMAGE_LOCAL_HANDOFF_SECRET*.md
+/.impeccable.md
+/verification/
+/private-notes/
+/reports/
+/OPENIMAGE_DEPLOYMENT_SUMMARY.md
+/full-flow-test-report-*.md
+/openimage-flow-closure-report-*.md
+*.bundle
+*.har
+*.pcap
+*.pem
+*.key
+*.jks
+*.keystore
+*.p12
+*.pfx
+signing.properties
+clients/picpilot-android/local.properties
+clients/picpilot-android/.gradle/
+clients/picpilot-android-native/local.properties
+clients/picpilot-android-native/.gradle/
+clients/picpilot-android-native/.kotlin/
+clients/picpilot-android-native/**/*.apk
+clients/picpilot-android-native/**/*.aab
+clients/picpilot-windows/src-tauri/target/
+clients/picpilot-windows/src-tauri/gen/
+clients/picpilot-windows/src-tauri/icons/android/
+clients/picpilot-windows/src-tauri/icons/ios/
+clients/picpilot-windows/src-tauri/icons/icon.icns
+clients/picpilot-windows/src-tauri/icons/Square*.png
+clients/picpilot-windows/src-tauri/icons/StoreLogo.png
+clients/picpilot-windows-native/**/bin/
+clients/picpilot-windows-native/**/obj/
+clients/picpilot-windows-native/**/TestResults/

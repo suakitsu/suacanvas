@@ -1,0 +1,12 @@
+{
+  "scripts": {
+    "backend:test": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/mvnw.ps1 test",
+    "backend:package": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/mvnw.ps1 -DskipTests package",
+    "test:e2e": "playwright test",
+    "test:e2e:smoke": "playwright test tests/e2e/smoke.spec.ts"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.61.0",
+    "@tailwindcss/postcss": "^4.3.0"
+  }
+}

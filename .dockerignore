@@ -1,0 +1,15 @@
+**
+!canvas-lab/
+!canvas-lab/nova-picpilot.Dockerfile
+!canvas-lab/picpilot-canvas-bridge.js
+!canvas-lab/picpilot-canvas-brand.js
+!third_party/
+!third_party/nova-image-studio/
+!third_party/nova-image-studio/**
+!third_party/canvas-lab/
+!third_party/canvas-lab/nova-image-studio/
+!third_party/canvas-lab/nova-image-studio/backend/
+!third_party/canvas-lab/nova-image-studio/backend/**
+**/node_modules/
+**/.env*
+**/data/

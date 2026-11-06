@@ -1,0 +1,52 @@
+{
+    "id": "/",
+    "name": "PicPilot AI 创作工作台",
+    "short_name": "PicPilot",
+    "description": "PicPilot AI 图像创作工作台",
+    "start_url": "/",
+    "display": "standalone",
+    "display_override": ["window-controls-overlay", "standalone"],
+    "background_color": "#f5f5fa",
+    "theme_color": "#1a1a2e",
+    "orientation": "any",
+    "categories": ["utilities", "productivity", "photo"],
+    "icons": [
+        {
+            "src": "/icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "/icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "/icon-maskable-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable"
+        }
+    ],
+    "screenshots": [
+        {
+            "src": "/screenshot-wide.png",
+            "sizes": "1280x720",
+            "type": "image/png",
+            "form_factor": "wide",
+            "label": "PicPilot AI 创作工作台"
+        },
+        {
+            "src": "/screenshot-narrow.png",
+            "sizes": "720x1280",
+            "type": "image/png",
+            "form_factor": "narrow",
+            "label": "PicPilot 移动端创作界面"
+        }
+    ],
+    "edge_side_panel": {
+        "preferred_width": 480
+    }
+}

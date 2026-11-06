@@ -1,0 +1,181 @@
+name: release
+
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        description: Deploy target
+        required: true
+        default: staging
+        type: choice
+        options:
+          - staging
+          - production
+      image_tag:
+        description: Existing image tag to promote. Leave empty to build the current commit.
+        required: false
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event.inputs.target || 'staging' }}
+  cancel-in-progress: ${{ github.event_name == 'push' }}
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  resolve:
+    runs-on: ubuntu-latest
+    outputs:
+      image_namespace: ${{ steps.meta.outputs.image_namespace }}
+      image_tag: ${{ steps.meta.outputs.image_tag }}
+      target: ${{ steps.meta.outputs.target }}
+      should_build: ${{ steps.meta.outputs.should_build }}
+    steps:
+      - id: meta
+        env:
+          INPUT_IMAGE_TAG: ${{ inputs.image_tag }}
+          INPUT_TARGET: ${{ inputs.target }}
+        shell: bash
+        run: |
+          namespace="ghcr.io/${GITHUB_REPOSITORY}"
+          namespace="$(printf '%s' "$namespace" | tr '[:upper:]' '[:lower:]')"
+          input_tag="$INPUT_IMAGE_TAG"
+          if [ -n "$input_tag" ]; then
+            [[ "$input_tag" =~ ^[A-Za-z0-9_][A-Za-z0-9_.-]{0,127}$ ]] || { echo "Invalid image tag"; exit 1; }
+            tag="$input_tag"
+            should_build=false
+          else
+            tag="${GITHUB_SHA}"
+            should_build=true
+          fi
+          target="$INPUT_TARGET"
+          echo "image_namespace=$namespace" >> "$GITHUB_OUTPUT"
+          echo "image_tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "target=$target" >> "$GITHUB_OUTPUT"
+          echo "should_build=$should_build" >> "$GITHUB_OUTPUT"
+
+  build:
+    runs-on: ubuntu-latest
+    needs: resolve
+    if: needs.resolve.outputs.should_build == 'true'
+    env:
+      IMAGE_NAMESPACE: ${{ needs.resolve.outputs.image_namespace }}
+      IMAGE_TAG: ${{ needs.resolve.outputs.image_tag }}
+      BACKEND_IMAGE: ${{ needs.resolve.outputs.image_namespace }}/backend:${{ needs.resolve.outputs.image_tag }}
+      USER_WEB_IMAGE: ${{ needs.resolve.outputs.image_namespace }}/user-web:${{ needs.resolve.outputs.image_tag }}
+      ADMIN_WEB_IMAGE: ${{ needs.resolve.outputs.image_namespace }}/admin-web:${{ needs.resolve.outputs.image_tag }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            openImage-ts/package-lock.json
+            openImage-admin-ts/package-lock.json
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: maven
+
+      - name: User web gate
+        working-directory: openImage-ts
+        run: |
+          npm ci
+          CI=true npm run lint
+          npm run build
+
+      - name: Admin web gate
+        working-directory: openImage-admin-ts
+        run: |
+          npm ci
+          CI=true npm run lint
+          npm run build
+
+      - name: Backend tests
+        working-directory: openImage
+        run: mvn -B test
+
+      - name: Build release images
+        shell: bash
+        run: |
+          docker build -t "$BACKEND_IMAGE" ./openImage
+          docker build -t "$USER_WEB_IMAGE" ./openImage-ts
+          docker build -t "$ADMIN_WEB_IMAGE" ./openImage-admin-ts
+          docker tag "$BACKEND_IMAGE" openimage_ci-backend:latest
+          docker tag "$USER_WEB_IMAGE" openimage_ci-user-web:latest
+          docker tag "$ADMIN_WEB_IMAGE" openimage_ci-admin-web:latest
+
+      - name: Compose smoke gate
+        shell: bash
+        run: |
+          python3 scripts/init-local-env.py
+          {
+            echo 'NEXT_PUBLIC_API_BASE_URL='
+            echo 'BACKEND_INTERNAL_BASE_URL=http://backend:8080'
+          } >> .env
+          docker compose --env-file .env --project-name openimage_ci up -d --no-build postgres redis minio backend user-web admin-web
+          bash scripts/smoke-test.sh http://localhost:18080
+
+      - name: Compose diagnostics
+        if: failure()
+        run: |
+          docker compose --env-file .env --project-name openimage_ci ps || true
+          docker compose --env-file .env --project-name openimage_ci logs --no-color backend || true
+
+      - name: Compose smoke down
+        if: always()
+        run: docker compose --env-file .env --project-name openimage_ci down -v --remove-orphans || true
+
+      - name: Login to GHCR
+        if: success()
+        run: echo "${{ github.token }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+
+      - name: Push release images
+        if: success()
+        shell: bash
+        run: |
+          docker push "$BACKEND_IMAGE"
+          docker push "$USER_WEB_IMAGE"
+          docker push "$ADMIN_WEB_IMAGE"
+
+  deploy-staging:
+    environment: staging
+    runs-on: ubuntu-latest
+    needs: [resolve, build]
+    if: always() && needs.resolve.outputs.target == 'staging' && (needs.build.result == 'success' || needs.build.result == 'skipped')
+    env:
+      DEPLOY_HOST: ${{ secrets.STAGING_SSH_HOST }}
+      DEPLOY_USER: ${{ secrets.STAGING_SSH_USER || 'root' }}
+      DEPLOY_KEY: ${{ secrets.STAGING_SSH_KEY || secrets.OPENIMAGE_DEPLOY_SSH_KEY }}
+      DEPLOY_DIR: ${{ secrets.STAGING_DEPLOY_DIR || '/opt/openimage' }}
+      IMAGE_NAMESPACE: ${{ needs.resolve.outputs.image_namespace }}
+      IMAGE_TAG: ${{ needs.resolve.outputs.image_tag }}
+      GHCR_USERNAME: ${{ github.actor }}
+      GHCR_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Deploy staging
+        run: bash scripts/ci-deploy-remote.sh staging
+
+  deploy-production:
+    environment: production
+    runs-on: ubuntu-latest
+    needs: [resolve, build]
+    if: always() && github.event_name == 'workflow_dispatch' && needs.resolve.outputs.target == 'production' && (needs.build.result == 'success' || needs.build.result == 'skipped')
+    env:
+      DEPLOY_HOST: ${{ secrets.PRODUCTION_SSH_HOST }}
+      DEPLOY_USER: ${{ secrets.PRODUCTION_SSH_USER || 'root' }}
+      DEPLOY_KEY: ${{ secrets.PRODUCTION_SSH_KEY || secrets.OPENIMAGE_DEPLOY_SSH_KEY }}
+      DEPLOY_DIR: ${{ secrets.PRODUCTION_DEPLOY_DIR || '/opt/openimage' }}
+      IMAGE_NAMESPACE: ${{ needs.resolve.outputs.image_namespace }}
+      IMAGE_TAG: ${{ needs.resolve.outputs.image_tag }}
+      GHCR_USERNAME: ${{ github.actor }}
+      GHCR_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Deploy production
+        run: bash scripts/ci-deploy-remote.sh production
